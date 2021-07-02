@@ -40,5 +40,10 @@
             "sizes": "512x512",
             "type": "image/png"
         }
-    ]
+    ],
+    "name": "Budget Tracker",
+    "display": "standalone",
+    "start_url": "/",
+    "background_color": "#eee",
+    "theme_color": "#eee"
 }
