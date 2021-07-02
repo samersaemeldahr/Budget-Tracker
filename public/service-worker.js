@@ -18,3 +18,17 @@ const FILES_TO_CACHE = [
 ];
 
 // Fetch request
+self.addEventListener('fetch', event => {
+    console.log('fetch request : ' + event.request.url)
+    event.respondWith(
+        caches.match(event.request).then(function (request) {
+            if (request) {
+                console.log('responding with cache : ' + event.request.url)
+                return request
+            } else {
+                console.log('file is not cached, fetching : ' + event.request.url)
+                return fetch(event.request)
+            }
+        })
+    )
+});
