@@ -10,6 +10,9 @@ request.onupgradeneeded = function (event) {
 // Successful connection
 request.onsuccess = function (event) {
     db = event.target.result;
+    if (navigator.onLine) {
+        checkDatabase();
+    }
 };
 
 // In case of an error
