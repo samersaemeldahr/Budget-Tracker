@@ -32,3 +32,13 @@ self.addEventListener('fetch', event => {
         })
     )
 });
+
+// Install request
+self.addEventListener('install', event => {
+    event.waitUntil(
+        caches.open(CACHE_NAME).then(cache => {
+            console.log('installing cache : ' + CACHE_NAME)
+            return cache.addAll(FILES_TO_CACHE)
+        })
+    )
+});
