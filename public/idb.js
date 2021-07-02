@@ -6,3 +6,13 @@ request.onupgradeneeded = function (event) {
     const db = event.target.result;
     db.createObjectStore('transaction', { autoIncrement: true });
 };
+
+// Successful connection
+request.onsuccess = function(event){
+    db = event.target.result;
+};
+
+// In case of an error
+request.onerror = function(event){
+    console.log(event.target.errorCode);
+}
