@@ -8,11 +8,18 @@ request.onupgradeneeded = function (event) {
 };
 
 // Successful connection
-request.onsuccess = function(event){
+request.onsuccess = function (event) {
     db = event.target.result;
 };
 
 // In case of an error
-request.onerror = function(event){
+request.onerror = function (event) {
     console.log(event.target.errorCode);
 }
+
+// Save record to store
+function saveRecord(record) {
+    const transaction = db.transaction(['transaction'], 'readwrite');
+    const transactionObjectStore = transaction.objectStore('transaction')
+    transactionObjectStore.add(record);
+};
