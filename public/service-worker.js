@@ -30,27 +30,24 @@ self.addEventListener('fetch', e => {
 // Install request
 self.addEventListener('install', function (e) {
     e.waitUntil(
-        caches.open(CACHE_NAME).then(function(cache){
-            console.log('Pre-cache successful')
+        caches.open(CACHE_NAME).then(cache => {
+            console.log('installing cache : ' + CACHE_NAME)
             return cache.addAll(FILES_TO_CACHE)
         })
     )
-    self.skipWaiting();
 });
 
 // Delete cache
-self.addEventListener('activate', event => {
-    event.waitUntil(
+self.addEventListener('activate', function (e) {
+    e.waitUntil(
         caches.keys().then(keyList => {
             return Promise.all(
                 keyList.map(key => {
                     if (key !== CACHE_NAME && key !== DATA_CACHE_NAME) {
                         console.log('Removing cache', key);
                         return caches.delete(key);
-                    }
-                })
-            )
+                }
+            }));
         })
     );
-    self.clients.claim();
-})
+});
