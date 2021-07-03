@@ -41,17 +41,15 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
     event.waitUntil(
         caches.keys().then(keyList => {
-            let cacheKeeplist = keyList.filter(function (key) {
-                return key.indexOf(APP_PREFIX);
-            })
-            cacheKeeplist.push(CACHE_NAME);
-
-            return Promise.all(keyList.map(function (key, i) {
-                if (cacheKeeplist.indexOf(key) === -1) {
-                    console.log('deleting cache : ' + keyList[i]);
-                    return caches.delete(keyList[i]);
-                }
-            }));
+            return Promise.all(
+                keyList.map(key => {
+                    if (key !== CACHE_NAME && key !== DATA_CACHE_NAME) {
+                        console.log('Removing cache', key);
+                        return caches.delete(key);
+                    }
+                })
+            )
         })
     );
-});
+    self.clients.claim();
+})
