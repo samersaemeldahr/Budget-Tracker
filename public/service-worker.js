@@ -13,16 +13,38 @@ const FILES_TO_CACHE = [
 
 // Fetch request
 self.addEventListener('fetch', event => {
-    console.log('fetch request : ' + event.request.url)
+    if (event.request.url.includes('/api/')) {
+        event.respondWith(
+            caches
+                .open(DATA_CACHE_NAME)
+                .then(cache => {
+                    return fetch(event.request)
+                        .then(response => {
+                            if (response.status === 200) {
+                                cache.put(event.request.url, response.clone());
+                            }
+                            return response;
+                        })
+                        .catch(err => {
+                            return cache.match(event.request);
+                        });
+                })
+                .catch(err => console.log(err))
+        );
+
+        return;
+    }
+
     event.respondWith(
-        caches.match(event.request).then(function (request) {
-            if (request) {
-                console.log('responding with cache : ' + event.request.url)
-                return request
-            } else {
-                console.log('file is not cached, fetching : ' + event.request.url)
-                return fetch(event.request)
-            }
+        fetch(event.request).catch(function () {
+            return caches.match(event.request).then(function (response) {
+                if (response) {
+                    return response;
+                }
+                else if (event.request.headers.get('accept').includes('text/html')) {
+                    return caches.match('/');
+                }
+            })
         })
     )
 });
@@ -30,11 +52,12 @@ self.addEventListener('fetch', event => {
 // Install request
 self.addEventListener('install', event => {
     event.waitUntil(
-        caches.open(CACHE_NAME).then(cache => {
-            console.log('installing cache : ' + CACHE_NAME)
+        caches.open(CACHE_NAME).then(function (cache) {
+            console.log('Pre-cache successful')
             return cache.addAll(FILES_TO_CACHE)
         })
     )
+    self.skipWaiting();
 });
 
 // Delete cache
