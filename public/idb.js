@@ -29,14 +29,14 @@ function saveRecord(record) {
 
 // Complete transaction
 function checkDatabase (){
-    const transaction = db.transaction(['ransaction'], 'readwrite');
+    const transaction = db.transaction(['transaction'], 'readwrite');
     const transactionObjectStore = transaction.objectStore('transaction');
     const getAll = transactionObjectStore.getAll();
 
 
     getAll.onsuccess = function(){
         if(getAll.result.length > 0){
-            fetch('/api/transaction', {
+            fetch('/api/transaction/bulk', {
                 method: 'POST',
                 body: JSON.stringify(getAll.result),
                 headers: {
