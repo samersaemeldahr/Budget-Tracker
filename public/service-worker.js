@@ -12,36 +12,36 @@ const FILES_TO_CACHE = [
 ];
 
 // Fetch request
-self.addEventListener('fetch', event => {
-    if (event.request.url.includes('/api/')) {
-        event.respondWith(
+self.addEventListener('fetch', function (e) {
+    if (e.request.url.includes('/api/')){
+        e.respondWith(
             caches
-                .open(DATA_CACHE_NAME)
-                .then(cache => {
-                    return fetch(event.request)
-                        .then(response => {
-                            if (response.status === 200) {
-                                cache.put(event.request.url, response.clone());
-                            }
-                            return response;
-                        })
-                        .catch(err => {
-                            return cache.match(event.request);
-                        });
+            .open(DATA_CACHE_NAME)
+            .then(cache => {
+                return fetch(e.request)
+                .then(response => {
+                    if (response.status === 200){
+                        cache.put(e.request.url, response.clone());
+                    }
+                    return response;
                 })
-                .catch(err => console.log(err))
+                .catch(err => {
+                return cache.match(e.request);
+                });
+            })
+            .catch(err => console.log(err))
         );
 
         return;
     }
 
-    event.respondWith(
-        fetch(event.request).catch(function () {
-            return caches.match(event.request).then(function (response) {
-                if (response) {
+    e.respondWith(
+        fetch(e.request).catch(function(){
+            return caches.match(e.request).then(function(response){
+                if(response){
                     return response;
                 }
-                else if (event.request.headers.get('accept').includes('text/html')) {
+                else if (e.request.headers.get('accept').includes('text/html')){
                     return caches.match('/');
                 }
             })
@@ -50,9 +50,9 @@ self.addEventListener('fetch', event => {
 });
 
 // Install request
-self.addEventListener('install', event => {
-    event.waitUntil(
-        caches.open(CACHE_NAME).then(function (cache) {
+self.addEventListener('install', function (e) {
+    e.waitUntil(
+        caches.open(CACHE_NAME).then(function(cache){
             console.log('Pre-cache successful')
             return cache.addAll(FILES_TO_CACHE)
         })
