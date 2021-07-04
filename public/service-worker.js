@@ -14,27 +14,30 @@ const FILES_TO_CACHE = [
 // Install request
 self.addEventListener('install', function (e) {
     e.waitUntil(
-        caches.open(CACHE_NAME).then(cache => {
-            console.log('installing cache : ' + CACHE_NAME)
+        caches.open(CACHE_NAME).then(function(cache){
+            console.log('Pre-cache successful')
             return cache.addAll(FILES_TO_CACHE)
         })
     )
+    self.skipWaiting();
 });
 
 // Delete cache
-self.addEventListener('activate', function (e) {
+self.addEventListener('activate', function(e) {
     e.waitUntil(
         caches.keys().then(keyList => {
             return Promise.all(
                 keyList.map(key => {
-                    if (key !== CACHE_NAME && key !== DATA_CACHE_NAME) {
-                        console.log('Removing cache', key);
+                    if(key!== CACHE_NAME && key !==DATA_CACHE_NAME){
+                        console.log("removing old cache data", key);
                         return caches.delete(key);
-                }
-            }));
+                    }
+                })
+            )
         })
     );
-});
+    self.clients.claim();
+})
 
 // Fetch request
 self.addEventListener('fetch', function (e) {
