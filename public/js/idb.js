@@ -4,7 +4,7 @@ const request = indexedDB.open('budget_tracker', 1);
 // Upgrade database
 request.onupgradeneeded = function (event) {
     const db = event.target.result;
-    db.createObjectStore('transaction', { autoIncrement: true });
+    db.createObjectStore('new_transaction', { autoIncrement: true });
 };
 
 // Successful connection
@@ -22,21 +22,21 @@ request.onerror = function (event) {
 
 // Save record to store
 function saveRecord(record) {
-    const transaction = db.transaction(['transaction'], 'readwrite');
-    const transactionObjectStore = transaction.objectStore('transaction')
+    const transaction = db.transaction(['new_transaction'], 'readwrite');
+    const transactionObjectStore = transaction.objectStore('new_transaction')
     transactionObjectStore.add(record);
 };
 
 // Complete transaction
 function checkDatabase (){
-    const transaction = db.transaction(['transaction'], 'readwrite');
-    const transactionObjectStore = transaction.objectStore('transaction');
+    const transaction = db.transaction(['new_transaction'], 'readwrite');
+    const transactionObjectStore = transaction.objectStore('new_transaction');
     const getAll = transactionObjectStore.getAll();
 
 
     getAll.onsuccess = function(){
         if(getAll.result.length > 0){
-            fetch('/api/transaction', {
+            fetch('/api/transaction/bulk', {
                 method: 'POST',
                 body: JSON.stringify(getAll.result),
                 headers: {
@@ -50,8 +50,8 @@ function checkDatabase (){
                     throw new Error(serverResponse);
                 }
 
-                const transaction = db.transaction(['transaction', 'readwrite']);
-                const transactionObjectStore = transaction.objectStore('transaction');
+                const transaction = db.transaction(['new_transaction', 'readwrite']);
+                const transactionObjectStore = transaction.objectStore('new_transaction');
                 transactionObjectStore.clear();
             })
             .catch(err => {
