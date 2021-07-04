@@ -3,8 +3,9 @@ const request = window.indexedDB.open('budget_tracker', 1);
 
 // Upgrade database
 request.onupgradeneeded = function (event) {
-    const db = event.target.result;
-    db.createObjectStore('transaction', { autoIncrement: true });
+    db = event.target.result;
+    const store = db.createObjectStore('transaction', { autoIncrement: true });
+    store.createIndex('transaction', 'transaction')
 };
 
 // Successful connection
@@ -29,6 +30,7 @@ function saveRecord(record) {
 
 // Complete transaction
 function checkDatabase() {
+    db = request.result;
     const transaction = db.transaction(['transaction'], 'readwrite');
     const transactionObjectStore = transaction.objectStore('transaction');
     const getAll = transactionObjectStore.getAll();
@@ -53,6 +55,7 @@ function checkDatabase() {
                     const transaction = db.transaction(['transaction', 'readwrite']);
                     const transactionObjectStore = transaction.objectStore('transaction');
                     transactionObjectStore.clear();
+                    window.location.reload()
                 })
                 .catch(err => {
                     console.log(err);
@@ -61,4 +64,4 @@ function checkDatabase() {
     }
 }
 
-window.addEventListener('online', checkDatabase);
+// window.addEventListener('online', checkDatabase);
