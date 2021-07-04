@@ -28,14 +28,14 @@ function saveRecord(record) {
 };
 
 // Complete transaction
-function checkDatabase (){
+function checkDatabase() {
     const transaction = db.transaction(['transaction'], 'readwrite');
     const transactionObjectStore = transaction.objectStore('transaction');
     const getAll = transactionObjectStore.getAll();
 
 
-    getAll.onsuccess = function(){
-        if(getAll.result.length > 0){
+    getAll.onsuccess = function () {
+        if (getAll.result.length > 0) {
             fetch('/api/transaction/bulk', {
                 method: 'POST',
                 body: JSON.stringify(getAll.result),
@@ -44,19 +44,19 @@ function checkDatabase (){
                     'Content-Type': 'application/json'
                 }
             })
-            .then(response = response.json())
-            .then(serverResponse => {
-                if(serverResponse.message){
-                    throw new Error(serverResponse);
-                }
+                .then(response = response.json())
+                .then(serverResponse => {
+                    if (serverResponse.message) {
+                        throw new Error(serverResponse);
+                    }
 
-                const transaction = db.transaction(['transaction', 'readwrite']);
-                const transactionObjectStore = transaction.objectStore('transaction');
-                transactionObjectStore.clear();
-            })
-            .catch(err => {
-                console.log(err);
-            })
+                    const transaction = db.transaction(['transaction', 'readwrite']);
+                    const transactionObjectStore = transaction.objectStore('transaction');
+                    transactionObjectStore.clear();
+                })
+                .catch(err => {
+                    console.log(err);
+                })
         }
     }
 }
