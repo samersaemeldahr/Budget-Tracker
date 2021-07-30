@@ -1,5 +1,5 @@
 let db;
-const request = indexedDB.open('budget_tracker', 1);
+const request = window.indexedDB.open('budget_tracker', 1);
 
 // Upgrade database
 request.onupgradeneeded = function (event) {
@@ -54,7 +54,7 @@ function uploadTransaction() {
                         throw new Error(serverResponse);
                     }
 
-                    const transaction = db.transaction(['new_transaction'], 'readwrite');
+                    const transaction = db.transaction(['new_transaction', 'readwrite']);
                     const transactionObjectStore = transaction.objectStore('new_transaction');
                     transactionObjectStore.clear();
                 })
