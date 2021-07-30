@@ -1,5 +1,5 @@
-const CACHE_NAME = 'budget-cache-version-1';
-const DATA_CACHE_NAME = 'budget-data-cache-version-1';
+const CACHE_NAME = 'my-budget-cache-v1';
+const DATA_CACHE_NAME = 'budget-data-cache-v1';
 const FILES_TO_CACHE = [
     '/',
     '/icons/icon-192x192.png',
@@ -59,10 +59,8 @@ self.addEventListener('fetch', function (e) {
             })
             .catch(err => console.log(err))
         );
-
         return;
     }
-
     e.respondWith(
         fetch(e.request).catch(function(){
             return caches.match(e.request).then(function(response){

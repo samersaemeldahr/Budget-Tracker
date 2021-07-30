@@ -1,18 +1,19 @@
 let db;
-const request = window.indexedDB.open('budget_tracker', 1);
+const request = indexedDB.open('budget_tracker', 1);
 
 // Upgrade database
 request.onupgradeneeded = function (event) {
-    db = event.target.result;
-    const store = db.createObjectStore('transaction', { autoIncrement: true });
-    store.createIndex('transaction', 'transaction')
+    const db = event.target.result;
+
+    db.createObjectStore('new_transaction', { autoIncrement: true });
 };
 
 // Successful connection
 request.onsuccess = function (event) {
     db = event.target.result;
+
     if (navigator.onLine) {
-        checkDatabase();
+        uploadTransaction();
     }
 };
 
@@ -23,16 +24,17 @@ request.onerror = function (event) {
 
 // Save record to store
 function saveRecord(record) {
-    const transaction = db.transaction(['transaction'], 'readwrite');
-    const transactionObjectStore = transaction.objectStore('transaction')
+    const transaction = db.transaction(['new_transaction'], 'readwrite');
+
+    const transactionObjectStore = transaction.objectStore('new_transaction')
+
     transactionObjectStore.add(record);
 };
 
 // Complete transaction
-function checkDatabase() {
-    db = request.result;
-    const transaction = db.transaction(['transaction'], 'readwrite');
-    const transactionObjectStore = transaction.objectStore('transaction');
+function uploadTransaction() {
+    const transaction = db.transaction(['new_transaction'], 'readwrite');
+    const transactionObjectStore = transaction.objectStore('new_transaction');
     const getAll = transactionObjectStore.getAll();
 
 
@@ -52,10 +54,9 @@ function checkDatabase() {
                         throw new Error(serverResponse);
                     }
 
-                    const transaction = db.transaction(['transaction', 'readwrite']);
-                    const transactionObjectStore = transaction.objectStore('transaction');
+                    const transaction = db.transaction(['new_transaction', 'readwrite']);
+                    const transactionObjectStore = transaction.objectStore('new_transaction');
                     transactionObjectStore.clear();
-                    window.location.reload()
                 })
                 .catch(err => {
                     console.log(err);
@@ -64,4 +65,4 @@ function checkDatabase() {
     }
 }
 
-// window.addEventListener('online', checkDatabase);
+window.addEventListener('online', uploadTransaction);
