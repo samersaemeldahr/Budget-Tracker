@@ -49,9 +49,12 @@ function uploadTransaction() {
                 }
             })
                 .then(response = response.json())
-                .then(() => {
+                .then(serverResponse => {
+                    if (serverResponse.message) {
+                        throw new Error(serverResponse);
+                    }
 
-                    const transaction = db.transaction(['new_transaction', 'readwrite']);
+                    const transaction = db.transaction(['transaction', 'readwrite']);
                     const transactionObjectStore = transaction.objectStore('new_transaction');
                     transactionObjectStore.clear();
                 })
