@@ -1,5 +1,5 @@
 let db;
-const request = window.indexedDB.open('budget_tracker', 1);
+const request = indexedDB.open('budget_tracker', 1);
 
 // Upgrade database
 request.onupgradeneeded = function (event) {
